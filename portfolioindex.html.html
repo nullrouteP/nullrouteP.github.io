@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Priyaranjan — Cybersecurity Student &amp; Aspiring SOC Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C140D;
+    --panel:#2A1F14;
+    --panel-2:#221909;
+    --line:#4A3822;
+    --text:#F7EFE3;
+    --muted:#BBA88C;
+    --amber:#D4A017;
+    --amber-rgb:212,160,23;
+    --amber-dim:#5c4610;
+    --teal:#8FBF9F;
+    --radius-sharp:2px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background-image:radial-gradient(circle, rgba(139,150,172,0.10) 1px, transparent 1px);
+    background-size:26px 26px;
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px; position:relative; z-index:1;}
+  h1,h2,h3{font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em;}
+  a{color:inherit; text-decoration:none;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(28,20,13,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px; max-width:1120px; margin:0 auto;
+  }
+  .logo{font-family:'Space Grotesk', sans-serif; font-weight:600; font-size:1.05rem; letter-spacing:0.02em;}
+  .logo span{color:var(--amber);}
+  .navlinks{display:flex; gap:32px; font-size:0.92rem; color:var(--muted);}
+  .navlinks a:hover{color:var(--text);}
+  .navmenu-toggle{display:none; background:none; border:none; color:var(--text); font-size:1.4rem; cursor:pointer;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:96px 0 88px;
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:40px;
+    align-items:center;
+    position:relative;
+  }
+  .hero-eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--amber);
+    border:1px solid var(--amber-dim); padding:5px 12px;
+    margin-bottom:22px; border-radius:2px;
+  }
+  .hero-eyebrow .dot{width:6px; height:6px; background:var(--amber); border-radius:50%; box-shadow:0 0 8px var(--amber);}
+  .hero h1{
+    font-size:3.1rem; font-weight:700; line-height:1.08; color:var(--text);
+    margin-bottom:18px;
+  }
+  .hero h1 .accent{color:var(--amber);}
+  .hero p.lede{
+    font-size:1.08rem; color:var(--muted); max-width:480px; margin-bottom:28px;
+  }
+  .hero .quote{
+    font-family:'Space Grotesk', sans-serif; font-style:normal; font-size:1.15rem;
+    color:var(--text); border-left:2px solid var(--amber); padding-left:18px;
+    margin-bottom:34px; max-width:460px; opacity:0.92;
+  }
+  .btnrow{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    padding:13px 26px; font-size:0.92rem; font-weight:600; border-radius:2px;
+    display:inline-block; cursor:pointer; transition:transform .15s ease, background .15s ease;
+    font-family:'Inter', sans-serif;
+  }
+  .btn-primary{background:var(--amber); color:#1c1400; border:1px solid var(--amber);}
+  .btn-primary:hover{background:#e8b84a;}
+  .btn-ghost{background:transparent; color:var(--text); border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--muted);}
+
+  /* hero visual - hex frame */
+  .hero-visual{
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+    height:400px;
+  }
+  .radar-ring{
+    position:absolute; width:340px; height:340px; border-radius:50%;
+    border:1px solid var(--line);
+  }
+  .radar-ring.r2{width:270px; height:270px;}
+  .radar-ring.r3{width:200px; height:200px;}
+  .radar-sweep{
+    position:absolute; width:340px; height:340px; border-radius:50%;
+    background:conic-gradient(from 0deg, rgba(var(--amber-rgb),0.28), transparent 30%);
+    animation:sweep 6s linear infinite;
+    mix-blend-mode:screen;
+  }
+  @keyframes sweep{ to{ transform:rotate(360deg); } }
+  .hex-frame{
+    position:relative; width:230px; height:250px;
+    clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background:linear-gradient(155deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    z-index:2;
+  }
+  .hex-frame img{width:100%; height:100%; object-fit:cover; clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);}
+  .hex-placeholder{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .hex-placeholder svg{width:48px; height:48px; color:var(--muted); opacity:0.6;}
+  .hex-placeholder span{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--muted);
+    letter-spacing:0.04em;
+  }
+  .hero-fade{
+    animation:fadeUp .8s ease both;
+  }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:90px 0; border-top:1px solid var(--line);}
+  .sec-head{margin-bottom:44px; max-width:600px;}
+  .sec-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--teal);
+    margin-bottom:10px; display:block;
+  }
+  .sec-head h2{font-size:2rem; font-weight:600; color:var(--text);}
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  .about-grid p{color:var(--muted); margin-bottom:16px; font-size:1rem;}
+  .about-grid p strong{color:var(--text); font-weight:600;}
+  .stat-list{display:flex; flex-direction:column; gap:22px;}
+  .stat{border-left:2px solid var(--line); padding-left:18px;}
+  .stat .num{font-family:'Space Grotesk', sans-serif; font-size:1.7rem; font-weight:700; color:var(--amber); display:block;}
+  .stat .lbl{font-size:0.88rem; color:var(--muted);}
+
+  /* ---------- SKILLS ---------- */
+  .skill-groups{display:grid; grid-template-columns:repeat(3, 1fr); gap:32px;}
+  .skill-group h3{font-size:1rem; color:var(--text); margin-bottom:14px; font-weight:600;}
+  .tag-row{display:flex; flex-wrap:wrap; gap:8px;}
+  .tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--muted);
+    border:1px solid var(--line); padding:6px 12px; border-radius:2px;
+  }
+
+  /* ---------- PROJECTS ---------- */
+  .project-card{
+    background:var(--panel); border:1px solid var(--line);
+    padding:38px; margin-bottom:24px; position:relative;
+  }
+  .project-card .status{
+    position:absolute; top:38px; right:38px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--amber);
+    border:1px solid var(--amber-dim); padding:4px 10px; border-radius:2px;
+  }
+  .project-card .status.progress{color:var(--teal); border-color:#1c5b55;}
+  .project-card h3{font-size:1.5rem; margin-bottom:10px; max-width:80%;}
+  .project-card p.desc{color:var(--muted); max-width:640px; margin-bottom:22px;}
+  .project-readout{
+    display:grid; grid-template-columns:repeat(4, auto); gap:34px;
+    padding:20px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    margin-bottom:22px;
+  }
+  .project-readout .rstat .rnum{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.25rem; color:var(--text); display:block;}
+  .project-readout .rstat .rlbl{font-size:0.78rem; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .project-links{display:flex; gap:22px; font-size:0.9rem;}
+  .project-links a{color:var(--amber); font-weight:600;}
+  .project-links a:hover{text-decoration:underline;}
+  .project-card.dim{opacity:0.75;}
+
+  /* ---------- CERTIFICATIONS ---------- */
+  .cert-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:20px;}
+  .cert-card{
+    border:1px solid var(--line); padding:24px; background:var(--panel-2);
+  }
+  .cert-card .cert-icon{width:34px; height:34px; margin-bottom:16px; border:1px solid var(--amber-dim); display:flex; align-items:center; justify-content:center; color:var(--amber); font-family:'Space Grotesk',sans-serif; font-weight:700; border-radius:2px;}
+  .cert-card h4{font-size:1rem; margin-bottom:6px; color:var(--text);}
+  .cert-card .issuer{font-size:0.85rem; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+  .cert-card.placeholder{border-style:dashed; opacity:0.55;}
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  footer{padding:80px 0 50px; border-top:1px solid var(--line);}
+  .contact-inner{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:32px;}
+  footer h2{font-size:2.1rem; margin-bottom:14px; max-width:480px;}
+  footer p{color:var(--muted); max-width:420px; margin-bottom:26px;}
+  .social-row{display:flex; gap:16px;}
+  .social-btn{
+    border:1px solid var(--line); padding:12px 22px; font-size:0.9rem; font-weight:600;
+    display:flex; align-items:center; gap:8px;
+  }
+  .social-btn:hover{border-color:var(--amber); color:var(--amber);}
+  .footer-bottom{
+    margin-top:60px; padding-top:24px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; color:var(--muted); font-size:0.82rem;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media(max-width:860px){
+    .hero{grid-template-columns:1fr; padding-top:56px;}
+    .hero-visual{height:260px; order:-1;}
+    .radar-ring, .radar-sweep{width:220px !important; height:220px !important;}
+    .radar-ring.r2{width:170px !important; height:170px !important;}
+    .radar-ring.r3{width:120px !important; height:120px !important;}
+    .hex-frame{width:150px; height:165px;}
+    .hex-placeholder{font-size:2rem;}
+    .hero h1{font-size:2.2rem;}
+    .about-grid, .skill-groups, .cert-grid{grid-template-columns:1fr;}
+    .navlinks{display:none;}
+    .navmenu-toggle{display:block;}
+    .project-readout{grid-template-columns:repeat(2,auto); row-gap:16px;}
+    .contact-inner{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">priyaranjan<span>@</span>soc</div>
+    <div class="navlinks">
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#work">Work</a>
+      <a href="#certs">Certifications</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="navmenu-toggle" aria-label="menu">☰</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero wrap" style="border-top:none;">
+    <div class="hero-fade">
+      <span class="hero-eyebrow"><span class="dot"></span>Available for SOC / Security Analyst roles</span>
+      <h1>Watching the network<br>for what shouldn't<br>be <span class="accent">there.</span></h1>
+      <p class="lede">I'm Priyaranjan — a cybersecurity student building real detection systems, not just studying theory. Currently based in Pune, India.</p>
+      <p class="quote">Most breaches don't hide. They just get ignored until someone's actually looking.</p>
+      <div class="btnrow">
+        <a href="#work" class="btn btn-primary">View my work</a>
+        <a href="#contact" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </div>
+    <div class="hero-visual hero-fade" style="animation-delay:.15s;">
+      <div class="radar-sweep"></div>
+      <div class="radar-ring"></div>
+      <div class="radar-ring r2"></div>
+      <div class="radar-ring r3"></div>
+      <div class="hex-frame">
+        <!-- Replace this whole hex-placeholder block with: <img src="your-photo.jpg" alt="Priyaranjan"> -->
+        <div class="hex-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+          <span>ADD PHOTO</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section id="about" class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag">// 01 — about</span>
+      <h2>Learning security by building it, not just reading about it.</h2>
+    </div>
+    <div class="about-grid">
+      <div>
+        <p>I'm a <strong>B.Tech Cybersecurity student</strong>, self-studying networking and security from the ground up through a structured curriculum I built for myself — covering everything from OSI-layer fundamentals to vulnerability assessment, with hands-on labs on TryHackMe and PortSwigger along the way.</p>
+        <p>What I care about is the gap between a tool that <em>looks</em> like it works in a slide deck, and one that actually catches something real. My projects are built to close that gap — end-to-end pipelines I've tested against live traffic, real alerting, and real edge cases, not just clean demo data.</p>
+        <p>My goal is a <strong>SOC Analyst role</strong>, where I can put that same instinct to work: not just watching dashboards, but understanding what the data is actually telling you.</p>
+      </div>
+      <!--
+        HOW TO UPDATE THESE STATS:
+        Just edit the numbers/text below directly — e.g. change "152" or
+        "1" or "2+" to whatever your real current numbers are as your
+        curriculum, projects, or lab count grows over time.
+      -->
+      <div class="stat-list">
+        <div class="stat">
+          <span class="num">152</span>
+          <span class="lbl">topics in my self-built cybersecurity &amp; networking curriculum</span>
+        </div>
+        <div class="stat">
+          <span class="num">1</span>
+          <span class="lbl">full-stack ML-based intrusion detection system, built and hardened solo</span>
+        </div>
+        <div class="stat">
+          <span class="num">2+</span>
+          <span class="lbl">hands-on lab platforms — TryHackMe &amp; PortSwigger Web Security Academy</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SKILLS ===================== -->
+  <section id="skills" class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag">// 02 — capabilities</span>
+      <h2>What I actually work with</h2>
+    </div>
+    <div class="skill-groups">
+      <div class="skill-group">
+        <h3>Detection &amp; Analysis</h3>
+        <div class="tag-row">
+          <span class="tag">Packet Analysis</span>
+          <span class="tag">Flow Tracking</span>
+          <span class="tag">Intrusion Detection</span>
+          <span class="tag">Vulnerability Assessment</span>
+          <span class="tag">MITRE ATT&amp;CK</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Tools &amp; Platforms</h3>
+        <div class="tag-row">
+          <span class="tag">Scapy</span>
+          <span class="tag">Wireshark</span>
+          <span class="tag">Nmap</span>
+          <span class="tag">TryHackMe</span>
+          <span class="tag">PortSwigger Academy</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Engineering</h3>
+        <div class="tag-row">
+          <span class="tag">Python</span>
+          <span class="tag">Flask</span>
+          <span class="tag">XGBoost</span>
+          <span class="tag">Socket.IO</span>
+          <span class="tag">REST APIs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS ===================== -->
+  <section id="work" class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag">// 03 — selected work</span>
+      <h2>Projects</h2>
+    </div>
+
+    <!--
+      HOW TO ADD A NEW PROJECT:
+      Copy one entire <div class="project-card">...</div> block (including the
+      closing tag) and paste it here, above or below an existing one, then edit
+      its text. There's no limit — this list just keeps growing downward,
+      each card stacks automatically with consistent spacing.
+      Use class="project-card" for finished projects, or class="project-card dim"
+      for in-progress ones (dims it slightly + gives it the "In progress" tag styling
+      when paired with <span class="status progress">).
+    -->
+
+    <div class="project-card">
+      <span class="status">Live &amp; functional</span>
+      <h3>NIDS Dashboard</h3>
+      <p class="desc">A real-time Network Intrusion Detection System — live packet capture with Scapy, flow-based feature engineering, and an XGBoost classifier trained on CICIDS2017 and NSL-KDD, all surfaced through a live dashboard with Telegram alerting, PCAP replay, and PDF reporting.</p>
+      <div class="project-readout">
+        <div class="rstat"><span class="rnum">XGBoost</span><span class="rlbl">ML ENGINE</span></div>
+        <div class="rstat"><span class="rnum">Telegram</span><span class="rlbl">LIVE ALERTS</span></div>
+        <div class="rstat"><span class="rnum">PCAP</span><span class="rlbl">OFFLINE REPLAY</span></div>
+        <div class="rstat"><span class="rnum">Hardened</span><span class="rlbl">AUTH + RATE LIMITS</span></div>
+      </div>
+      <div class="project-links">
+        <!-- Replace # with your actual repo link -->
+        <a href="#">View on GitHub →</a>
+        <a href="#">Read the case study</a>
+      </div>
+    </div>
+
+    <div class="project-card dim">
+      <span class="status progress">In progress</span>
+      <h3>SAT-SA — Supervisory Analytics for SOC Assessment</h3>
+      <p class="desc">Based on a Smart India Hackathon 2026 problem statement (NTRO): a tool that analyses SOC alert and case-management data to flag operational weaknesses supervisors would otherwise catch only through manual review — execution gaps, missing telemetry, and peer-benchmarking anomalies, fully explainable and built for offline deployment.</p>
+      <div class="project-links">
+        <a href="#">View on GitHub →</a>
+      </div>
+    </div>
+
+    <!-- ↑ Paste new project-card blocks here as you build more ↑ -->
+  </section>
+
+  <!-- ===================== CERTIFICATIONS ===================== -->
+  <section id="certs" class="wrap">
+    <div class="sec-head">
+      <span class="sec-tag">// 04 — certifications</span>
+      <h2>Certifications &amp; training</h2>
+    </div>
+    <!--
+      HOW TO ADD A NEW CERTIFICATION:
+      Copy one entire <div class="cert-card">...</div> block and paste it
+      below, then edit the name/issuer text. The grid automatically
+      re-flows into more rows as you add cards — no limit, no layout
+      changes needed. Remove class="placeholder" once it's a real,
+      earned certificate (that class just gives the dashed "not yet
+      earned" look to the empty starter cards below).
+    -->
+    <div class="cert-grid">
+      <div class="cert-card placeholder">
+        <div class="cert-icon">?</div>
+        <h4>[Certification name]</h4>
+        <span class="issuer">[Issuer · Year]</span>
+      </div>
+      <div class="cert-card placeholder">
+        <div class="cert-icon">?</div>
+        <h4>[Certification name]</h4>
+        <span class="issuer">[Issuer · Year]</span>
+      </div>
+      <div class="cert-card placeholder">
+        <div class="cert-icon">?</div>
+        <h4>[Certification name]</h4>
+        <span class="issuer">[Issuer · Year]</span>
+      </div>
+      <!-- ↑ Paste new cert-card blocks here as you earn more ↑ -->
+    </div>
+  </section>
+
+  <!-- ===================== CONTACT ===================== -->
+  <footer id="contact" class="wrap">
+    <div class="contact-inner">
+      <div>
+        <h2>Let's talk security.</h2>
+        <p>Open to SOC Analyst roles, internships, and interesting problems. Reach out — I'll get back to you.</p>
+        <a href="mailto:singhpriyaranjan307@gmail.com" class="btn btn-primary">singhpriyaranjan307@gmail.com</a>
+      </div>
+      <div class="social-row">
+        <!-- Your real profile URLs -->
+        <a href="https://github.com/nullrouteP" class="social-btn" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/priyaranjankumar-singh-0b74803b5" class="social-btn" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+    <div class="footer-bottom wrap" style="padding:0;">
+      <span>PRIYARANJAN · PUNE, IN</span>
+      <span>© 2026</span>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>
