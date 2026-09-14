@@ -1,0 +1,22 @@
+$file = "c:\portfolioindex.html\index.html"
+$content = [System.IO.File]::ReadAllText($file)
+
+Write-Output "File Size: $($content.Length) bytes"
+Write-Output "Has NIDS Dashboard: $($content.Contains('NIDS Dashboard'))"
+Write-Output "Has NIDS GitHub Link: $($content.Contains('https://github.com/nullrouteP/nids-dashboard'))"
+Write-Output "Has Sub-projects Removed (PCAP Anomaly): $(-not $content.Contains('PCAP Anomaly Extractor'))"
+Write-Output "Has Sub-projects Removed (SIEM Lab): $(-not $content.Contains('SIEM Log Pipeline Lab'))"
+Write-Output "Has Dummy Certs Removed (CompTIA Security+ hardcoded in HTML): $(-not $content.Contains('ALIGNED / IN PROGRESS'))"
+Write-Output "Has Projects Dynamic Grid: $($content.Contains('projects-dynamic-grid'))"
+Write-Output "Has Certs Dynamic Grid: $($content.Contains('certs-dynamic-grid'))"
+Write-Output "Has Cyber Empty Slots (CSS): $($content.Contains('.cyber-empty-slot'))"
+Write-Output "Has Cyber Empty Certs (CSS): $($content.Contains('.cyber-empty-cert'))"
+Write-Output "Has Project Upload Modal: $($content.Contains('id=""project-modal""'))"
+Write-Output "Has Cert Upload Modal: $($content.Contains('id=""cert-modal""'))"
+Write-Output "Has Backup / Export Modal: $($content.Contains('id=""backup-modal""'))"
+Write-Output "Has renderProjects JS function: $($content.Contains('function renderProjects()'))"
+Write-Output "Has renderCerts JS function: $($content.Contains('function renderCerts()'))"
+Write-Output "Has handleProjectSubmit JS function: $($content.Contains('function handleProjectSubmit'))"
+Write-Output "Has handleCertSubmit JS function: $($content.Contains('function handleCertSubmit'))"
+Write-Output "Has LocalStorage persistence keys: $($content.Contains('cyber_portfolio_projects') -and $content.Contains('cyber_portfolio_certs'))"
+
