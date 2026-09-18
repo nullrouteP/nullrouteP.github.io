@@ -1631,6 +1631,42 @@
       background: rgba(7, 14, 23, 0.7);
     }
 
+    /* ---------- ADMIN MODE & SECURITY CONTROLS ---------- */
+    body:not(.admin-authenticated) .admin-only-control {
+      display: none !important;
+    }
+
+    .admin-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-admin-logout {
+      background: rgba(255, 83, 112, 0.15);
+      border: 1px solid rgba(255, 83, 112, 0.4);
+      color: var(--coral);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin-left: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-admin-logout:hover {
+      background: var(--coral);
+      color: #fff;
+    }
+
     /* ---------- INTERACTIVE SOC TERMINAL / CONTACT ---------- */
     .terminal-window {
       background: #050a10;
@@ -2202,11 +2238,12 @@
           <p>Deploy and showcase your custom security scripts, packet analyzers, or detection tools.</p>
         </div>
         <div class="section-action-btns">
-          <button class="btn btn-primary btn-sm" id="btn-open-project-modal" onclick="openProjectModal()">
+          <div id="admin-projects-status-container"></div>
+          <button class="btn btn-primary btn-sm admin-only-control" id="btn-open-project-modal" onclick="openProjectModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>+ Upload Project</span>
           </button>
-          <button class="btn btn-ghost btn-sm" id="btn-export-projects" onclick="exportData('projects')" title="Export backup JSON">
+          <button class="btn btn-ghost btn-sm admin-only-control" id="btn-export-projects" onclick="exportData('projects')" title="Export backup JSON">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Export JSON</span>
           </button>
@@ -2231,11 +2268,12 @@
           <p>Continuous education in cybersecurity foundations, incident handling, and SOC fundamentals.</p>
         </div>
         <div class="section-action-btns">
-          <button class="btn btn-primary btn-sm" id="btn-open-cert-modal" onclick="openCertModal()">
+          <div id="admin-certs-status-container"></div>
+          <button class="btn btn-primary btn-sm admin-only-control" id="btn-open-cert-modal" onclick="openCertModal()">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>+ Upload Certificate</span>
           </button>
-          <button class="btn btn-ghost btn-sm" id="btn-export-certs" onclick="exportData('certs')" title="Export backup JSON">
+          <button class="btn btn-ghost btn-sm admin-only-control" id="btn-export-certs" onclick="exportData('certs')" title="Export backup JSON">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Export JSON</span>
           </button>
@@ -2352,10 +2390,46 @@
         <a href="https://github.com/nullrouteP/nids-dashboard" target="_blank" rel="noopener noreferrer" id="footer-github-link">nids-dashboard on GitHub</a>
         <a href="#about">About</a>
         <a href="#skills">Skills</a>
+        <a href="javascript:void(0)" onclick="openAdminAuthModal()" id="footer-admin-trigger" title="Admin Login (Ctrl+Shift+A)" style="opacity:0.65;">🔐 Admin</a>
         <a href="#">Top &uarr;</a>
       </div>
     </div>
   </footer>
+
+  <!-- ===================== ADMIN AUTHENTICATION MODAL ===================== -->
+  <div class="modal-backdrop" id="admin-auth-modal" onclick="handleBackdropClick(event, 'admin-auth-modal')">
+    <div class="modal-dialog" style="max-width: 420px;">
+      <div class="modal-header">
+        <div>
+          <div class="modal-header-tag">// SYS://SECURITY_AUTHENTICATION</div>
+          <h3>Admin Security Verification</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeAdminAuthModal()" aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <form id="admin-auth-form" onsubmit="handleAdminAuthSubmit(event)">
+        <div class="modal-body">
+          <p style="color:var(--text-muted); font-size:0.88rem; line-height:1.5; margin-bottom: 16px;">
+            Enter your Admin PIN / Passcode to unlock project upload, edit, delete, and data backup capabilities.
+          </p>
+          <div class="form-group">
+            <label class="form-label" for="admin-pin-input">Admin Passcode / PIN <span class="req">*</span></label>
+            <input type="password" id="admin-pin-input" class="form-input" placeholder="Enter PIN (Default: 1234)" autocomplete="off" required style="letter-spacing: 0.25em; font-size: 1.1rem; text-align: center; font-family: var(--font-mono);">
+          </div>
+          <div id="admin-auth-msg" style="font-family:var(--font-mono); font-size:0.8rem; min-height:20px; text-align:center; margin-top:10px;"></div>
+        </div>
+
+        <div class="modal-footer" style="justify-content: space-between;">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="closeAdminAuthModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">
+            <span>Verify &amp; Unlock</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- ===================== PROJECT UPLOAD / EDIT MODAL ===================== -->
   <div class="modal-backdrop" id="project-modal" onclick="handleBackdropClick(event, 'project-modal')">
@@ -2628,6 +2702,109 @@
       }
     }
 
+    // ---------- ADMIN SECURITY & AUTHENTICATION ----------
+    const DEFAULT_ADMIN_PIN = '1234';
+
+    function getAdminPin() {
+      return localStorage.getItem('cyber_admin_pin') || DEFAULT_ADMIN_PIN;
+    }
+
+    function isAdminLoggedIn() {
+      return sessionStorage.getItem('cyber_admin_authenticated') === 'true';
+    }
+
+    function updateAdminUI() {
+      const isAuth = isAdminLoggedIn();
+      if (isAuth) {
+        document.body.classList.add('admin-authenticated');
+      } else {
+        document.body.classList.remove('admin-authenticated');
+      }
+
+      const projContainer = document.getElementById('admin-projects-status-container');
+      const certContainer = document.getElementById('admin-certs-status-container');
+      
+      const badgeHtml = isAuth 
+        ? `<div class="admin-status-badge">
+            <span class="pulse-dot" style="background:#10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <span>ADMIN ACTIVE</span>
+            <button type="button" class="btn-admin-logout" onclick="logoutAdmin()" title="Exit Admin Mode">Lock 🔒</button>
+           </div>` 
+        : '';
+
+      if (projContainer) projContainer.innerHTML = badgeHtml;
+      if (certContainer) certContainer.innerHTML = badgeHtml;
+
+      const footerAdminBtn = document.getElementById('footer-admin-trigger');
+      if (footerAdminBtn) {
+        footerAdminBtn.innerHTML = isAuth ? '🔓 Admin Active' : '🔐 Admin';
+      }
+    }
+
+    function openAdminAuthModal() {
+      if (isAdminLoggedIn()) {
+        if (confirm("Admin Mode is currently active! Would you like to lock / logout now?")) {
+          logoutAdmin();
+        }
+        return;
+      }
+      const modal = document.getElementById('admin-auth-modal');
+      const pinInput = document.getElementById('admin-pin-input');
+      const msg = document.getElementById('admin-auth-msg');
+      if (pinInput) pinInput.value = '';
+      if (msg) msg.textContent = '';
+      if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => pinInput && pinInput.focus(), 150);
+      }
+    }
+
+    function closeAdminAuthModal() {
+      const modal = document.getElementById('admin-auth-modal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function handleAdminAuthSubmit(e) {
+      e.preventDefault();
+      const pinInput = document.getElementById('admin-pin-input');
+      const msg = document.getElementById('admin-auth-msg');
+      const enteredPin = pinInput ? pinInput.value.trim() : '';
+
+      if (enteredPin === getAdminPin()) {
+        sessionStorage.setItem('cyber_admin_authenticated', 'true');
+        if (msg) {
+          msg.style.color = '#34d399';
+          msg.textContent = '✓ Authentication Successful! Unlocking Admin Mode...';
+        }
+        setTimeout(() => {
+          closeAdminAuthModal();
+          updateAdminUI();
+          renderProjects();
+          renderCerts();
+        }, 500);
+      } else {
+        if (msg) {
+          msg.style.color = 'var(--coral)';
+          msg.textContent = '✗ Access Denied: Invalid Admin PIN!';
+        }
+        if (pinInput) {
+          pinInput.value = '';
+          pinInput.focus();
+        }
+      }
+    }
+
+    function logoutAdmin() {
+      sessionStorage.removeItem('cyber_admin_authenticated');
+      updateAdminUI();
+      renderProjects();
+      renderCerts();
+    }
+
     // ---------- RENDERING PROJECTS ----------
     function renderProjects() {
       const container = document.getElementById('projects-dynamic-grid');
@@ -2659,7 +2836,7 @@
       if (projects.length === 0) {
         // 1 remaining empty slot (SAT-SA now permanently fills slot 01)
         html += `
-          <div class="cyber-empty-slot" onclick="openProjectModal()" title="Click to upload a new project">
+          <div class="cyber-empty-slot admin-only-control" onclick="openProjectModal()" title="Click to upload a new project">
             <div class="empty-slot-reticle tl"></div>
             <div class="empty-slot-reticle tr"></div>
             <div class="empty-slot-reticle bl"></div>
@@ -2700,7 +2877,7 @@
               <div class="cpc-body">
                 <div class="cpc-top">
                   <span class="cpc-category">${escapeHtml(proj.category || 'Security Tool')}</span>
-                  <div class="card-actions">
+                  <div class="card-actions admin-only-control">
                     <button class="btn-icon-action" onclick="openProjectModal('${proj.id}')" title="Edit project">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
@@ -2726,7 +2903,7 @@
         // Add slot at the end for unlimited uploads (offset by 1 since SAT-SA permanently occupies slot 01)
         const nextSlotNum = String(projects.length + 2).padStart(2, '0');
         html += `
-          <div class="cyber-empty-slot" onclick="openProjectModal()" title="Add another project">
+          <div class="cyber-empty-slot admin-only-control" onclick="openProjectModal()" title="Add another project">
             <div class="empty-slot-reticle tl"></div>
             <div class="empty-slot-reticle tr"></div>
             <div class="empty-slot-reticle bl"></div>
@@ -2772,7 +2949,7 @@
         for (let i = 1; i <= 3; i++) {
           const slotNum = String(i).padStart(2, '0');
           html += `
-            <div class="cyber-empty-cert" onclick="openCertModal()" title="Click to upload certification">
+            <div class="cyber-empty-cert admin-only-control" onclick="openCertModal()" title="Click to upload certification">
               <div class="empty-slot-reticle tl"></div>
               <div class="empty-slot-reticle tr"></div>
               <div class="empty-slot-reticle bl"></div>
@@ -2808,7 +2985,7 @@
                   <div class="cert-icon-wrapper">
                     ${iconWrapperContent}
                   </div>
-                  <div class="card-actions">
+                  <div class="card-actions admin-only-control">
                     <button class="btn-icon-action" onclick="openCertModal('${cert.id}')" title="Edit certificate">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
@@ -2833,7 +3010,7 @@
         // Add empty slot at the end for unlimited uploads
         const nextCertSlot = String(certs.length + 1).padStart(2, '0');
         html += `
-          <div class="cyber-empty-cert" onclick="openCertModal()" title="Add another certification">
+          <div class="cyber-empty-cert admin-only-control" onclick="openCertModal()" title="Add another certification">
             <div class="empty-slot-reticle tl"></div>
             <div class="empty-slot-reticle tr"></div>
             <div class="empty-slot-reticle bl"></div>
@@ -2854,6 +3031,10 @@
 
     // ---------- MODAL CONTROLLERS & FORM HANDLERS ----------
     function openProjectModal(id = null) {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       const modal = document.getElementById('project-modal');
       const titleEl = document.getElementById('project-modal-title');
       const form = document.getElementById('project-form');
@@ -2897,6 +3078,10 @@
 
     function handleProjectSubmit(e) {
       e.preventDefault();
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       const id = document.getElementById('proj-id').value || 'proj_' + Date.now();
       const title = document.getElementById('proj-title').value.trim();
       const category = document.getElementById('proj-category').value.trim();
@@ -2929,6 +3114,10 @@
     }
 
     function deleteProject(id) {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       if (!confirm("Are you sure you want to delete this project?")) return;
       let projects = getStoredProjects();
       projects = projects.filter(p => p.id !== id);
@@ -2937,6 +3126,10 @@
     }
 
     function openCertModal(id = null) {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       const modal = document.getElementById('cert-modal');
       const titleEl = document.getElementById('cert-modal-title');
       const form = document.getElementById('cert-form');
@@ -2979,6 +3172,10 @@
 
     function handleCertSubmit(e) {
       e.preventDefault();
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       const id = document.getElementById('cert-id').value || 'cert_' + Date.now();
       const name = document.getElementById('cert-name').value.trim();
       const issuer = document.getElementById('cert-issuer').value.trim();
@@ -3010,6 +3207,10 @@
     }
 
     function deleteCert(id) {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       if (!confirm("Are you sure you want to delete this certification?")) return;
       let certs = getStoredCerts();
       certs = certs.filter(c => c.id !== id);
@@ -3045,6 +3246,7 @@
         if (modalId === 'project-modal') closeProjectModal();
         if (modalId === 'cert-modal') closeCertModal();
         if (modalId === 'backup-modal') closeBackupModal();
+        if (modalId === 'admin-auth-modal') closeAdminAuthModal();
       }
     }
 
@@ -3061,6 +3263,10 @@
     let activeBackupType = 'projects';
 
     function exportData(type) {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       activeBackupType = type;
       const modal = document.getElementById('backup-modal');
       const titleEl = document.getElementById('backup-modal-title');
@@ -3109,6 +3315,10 @@
     }
 
     function restoreBackupData() {
+      if (!isAdminLoggedIn()) {
+        openAdminAuthModal();
+        return;
+      }
       const textarea = document.getElementById('backup-json');
       const statusMsg = document.getElementById('backup-status-msg');
       try {
@@ -3142,6 +3352,21 @@
         .replace(/'/g, '&#039;');
     }
 
+    // Escape key & Keyboard Shortcut Admin triggers
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProjectModal();
+        closeCertModal();
+        closeBackupModal();
+        closeAdminAuthModal();
+      }
+      // Ctrl + Shift + A shortcut to open Admin Modal
+      if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        openAdminAuthModal();
+      }
+    });
+
     // ---------- INTERACTIVE TERMINAL LOGIC ----------
     const termInput = document.getElementById('term-input');
     const termOutput = document.getElementById('term-output');
@@ -3154,14 +3379,25 @@
       switch (cleanCmd) {
         case 'help':
           response = `Available commands:<br>
+            • <span class="highlight">admin</span> / <span class="highlight">login</span> - Open Admin PIN Verification Modal<br>
+            • <span class="highlight">logout</span> - Exit Admin Mode &amp; Lock Controls<br>
             • <span class="highlight">nids</span> - Display featured NIDS Dashboard specs &amp; repo<br>
-            • <span class="highlight">projects</span> - List NIDS Dashboard + all your uploaded projects<br>
-            • <span class="highlight">certs</span> - List all your uploaded certifications<br>
+            • <span class="highlight">projects</span> - List NIDS Dashboard + all uploaded projects<br>
+            • <span class="highlight">certs</span> - List all uploaded certifications<br>
             • <span class="highlight">github</span> - Redirect to NIDS Dashboard GitHub repo<br>
             • <span class="highlight">skills</span> - List detection, tools &amp; engineering proficiencies<br>
             • <span class="highlight">about</span> - Brief background on Priyaranjan<br>
             • <span class="highlight">contact</span> - Display contact channels<br>
             • <span class="highlight">clear</span> - Clear the terminal screen`;
+          break;
+        case 'admin':
+        case 'login':
+          openAdminAuthModal();
+          response = `<span class="highlight">Opening Admin Passcode Authentication Modal...</span>`;
+          break;
+        case 'logout':
+          logoutAdmin();
+          response = `<span class="highlight">Admin Mode locked. Public view restored.</span>`;
           break;
         case 'github':
           response = `Redirecting to <a href="https://github.com/nullrouteP/nids-dashboard" target="_blank" class="highlight">https://github.com/nullrouteP/nids-dashboard</a>...`;
@@ -3179,7 +3415,7 @@
           let projList = `[01] <span class="highlight">NIDS Dashboard (Featured)</span> - Real-time Network Intrusion Detection System (<a href="https://github.com/nullrouteP/nids-dashboard" target="_blank" class="highlight">GitHub</a>)<br>`;
           projList += `[02] <span class="highlight">SAT-SA</span> - Supervisory Analytics Tool for SOC Assessment (<a href="https://github.com/nullrouteP/sat-sa-soc-tool" target="_blank" class="highlight">GitHub</a>)<br>`;
           if (curProjects.length === 0) {
-            projList += `Additional slots available: 1 empty slot ready for deployment. Use "+ Upload Project" above to add your custom builds!`;
+            projList += `Additional slots available: 1 empty slot ready for deployment.`;
           } else {
             curProjects.forEach((p, i) => {
               projList += `[${String(i+3).padStart(2, '0')}] <span class="highlight">${escapeHtml(p.title)}</span> (${escapeHtml(p.category || 'Security Tool')})<br>`;
@@ -3190,7 +3426,7 @@
         case 'certs':
           const curCerts = getStoredCerts();
           if (curCerts.length === 0) {
-            response = `Certification slots available: 3 empty slots. Use "+ Upload Certificate" above to record your credentials!`;
+            response = `Certification slots available: 3 empty slots.`;
           } else {
             let certList = `<span class="highlight">Uploaded Certifications:</span><br>`;
             curCerts.forEach((c, i) => {
@@ -3235,13 +3471,20 @@
     }
 
     // ---------- INITIAL BOOTSTRAP ----------
-    document.addEventListener('DOMContentLoaded', () => {
+    function initApp() {
+      updateAdminUI();
       renderProjects();
       renderCerts();
-    });
-    // In case DOM is already ready:
-    renderProjects();
-    renderCerts();
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('admin') === 'true' && !isAdminLoggedIn()) {
+        openAdminAuthModal();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', initApp);
+    initApp();
   </script>
 </body>
 </html>
+
